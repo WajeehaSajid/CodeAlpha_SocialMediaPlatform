@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether — Join the Community</title>
+  <meta name="description" content="Aether is a modern social media platform to connect, share, and discover." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+</head>
+<body class="auth-page">
+
+  <!-- Left Brand Panel -->
+  <div class="auth-brand">
+    <div class="auth-brand-logo">
+      <div class="logo-icon">✦</div>
+      <h1>Aether</h1>
+    </div>
+    <h2 class="auth-tagline">Where Ideas Connect &amp; Communities Thrive</h2>
+    <p class="auth-description">
+      Share your thoughts, discover new perspectives, and build meaningful connections with people who share your passions.
+    </p>
+    <ul class="auth-features">
+      <li class="auth-feature">
+        <div class="auth-feature-icon">✨</div>
+        <div class="auth-feature-text">
+          <h4>Share Your Story</h4>
+          <p>Post thoughts, images, and moments with the world</p>
+        </div>
+      </li>
+      <li class="auth-feature">
+        <div class="auth-feature-icon">🤝</div>
+        <div class="auth-feature-text">
+          <h4>Build Connections</h4>
+          <p>Follow people who inspire you and grow your network</p>
+        </div>
+      </li>
+      <li class="auth-feature">
+        <div class="auth-feature-icon">🔔</div>
+        <div class="auth-feature-text">
+          <h4>Stay Updated</h4>
+          <p>Get notified when people like, comment, or follow you</p>
+        </div>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Right Form Panel -->
+  <div class="auth-form-panel">
+    <div class="glass-card auth-form-card">
+
+      <!-- Tab Toggle -->
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab-btn active" id="login-tab-btn" role="tab" aria-selected="true">
+          Sign In
+        </button>
+        <button class="auth-tab-btn" id="register-tab-btn" role="tab" aria-selected="false">
+          Create Account
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div class="auth-form-section active" id="login-section">
+        <h2 class="auth-form-title">Welcome back 👋</h2>
+        <p class="auth-form-subtitle">Sign in to your Aether account</p>
+
+        <form id="login-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="login-email">Email Address</label>
+            <input class="form-input" type="email" id="login-email" name="email"
+              placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password</label>
+            <input class="form-input" type="password" id="login-password" name="password"
+              placeholder="••••••••" autocomplete="current-password" required />
+          </div>
+          <div id="login-error" class="form-error" role="alert"></div>
+          <button class="btn btn-primary btn-full btn-lg" type="submit" id="login-submit-btn">
+            Sign In
+          </button>
+        </form>
+
+        <p style="text-align:center;margin-top:20px;font-size:0.88rem;color:var(--text-muted);">
+          Don't have an account?
+          <a href="#" id="switch-to-register" style="color:var(--accent-light);">Create one</a>
+        </p>
+      </div>
+
+      <!-- Register Form -->
+      <div class="auth-form-section" id="register-section">
+        <h2 class="auth-form-title">Join Aether 🚀</h2>
+        <p class="auth-form-subtitle">Create your account and start connecting</p>
+
+        <form id="register-form" novalidate>
+          <div class="form-group">
+            <label class="form-label" for="register-name">Full Name</label>
+            <input class="form-input" type="text" id="register-name" name="name"
+              placeholder="Jane Doe" autocomplete="name" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="register-username">Username</label>
+            <input class="form-input" type="text" id="register-username" name="username"
+              placeholder="janedoe" autocomplete="username" required />
+            <span style="font-size:0.78rem;color:var(--text-muted);">Letters, numbers, underscores only</span>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="register-email">Email Address</label>
+            <input class="form-input" type="email" id="register-email" name="email"
+              placeholder="you@example.com" autocomplete="email" required />
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="register-password">Password</label>
+            <input class="form-input" type="password" id="register-password" name="password"
+              placeholder="Min. 6 characters" autocomplete="new-password" required />
+          </div>
+          <div id="register-error" class="form-error" role="alert"></div>
+          <button class="btn btn-primary btn-full btn-lg" type="submit" id="register-submit-btn">
+            Create Account
+          </button>
+        </form>
+
+        <p style="text-align:center;margin-top:20px;font-size:0.88rem;color:var(--text-muted);">
+          Already have an account?
+          <a href="#" id="switch-to-login" style="color:var(--accent-light);">Sign in</a>
+        </p>
+      </div>
+
+    </div>
+  </div>
+
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="/js/auth.js"></script>
+</body>
+</html>

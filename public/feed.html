@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether — Home</title>
+  <meta name="description" content="Aether — Your social feed." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    body { background-color: var(--bg-primary); }
+    body::before { content:''; position:fixed; top:-300px; right:-200px; width:700px; height:700px; background:radial-gradient(circle,rgba(124,58,237,0.08) 0%,transparent 70%); pointer-events:none; z-index:0; }
+  </style>
+</head>
+<body>
+
+<div class="app-layout">
+
+  <!-- LEFT SIDEBAR -->
+  <aside class="sidebar-left" id="sidebar-left">
+    <div class="sidebar-logo">
+      <div class="logo-icon">✦</div>
+      <span>Aether</span>
+    </div>
+
+    <nav class="sidebar-nav" role="navigation" aria-label="Main navigation">
+      <a class="nav-link active" id="nav-home" href="#" onclick="switchTab('feed'); setActiveNav('nav-home'); return false;">
+        <span class="nav-icon">🏠</span> Home
+      </a>
+      <a class="nav-link" id="nav-search" href="#" onclick="switchTab('search'); setActiveNav('nav-search'); return false;">
+        <span class="nav-icon">🔍</span> Search
+      </a>
+      <a class="nav-link" id="nav-notif" href="#" onclick="switchTab('notifications'); setActiveNav('nav-notif'); return false;">
+        <span class="nav-icon">🔔</span> Notifications
+        <span class="notif-badge" id="notif-badge" style="display:none;"></span>
+      </a>
+      <a class="nav-link" id="nav-bookmarks" href="#" onclick="switchTab('bookmarks'); setActiveNav('nav-bookmarks'); return false;">
+        <span class="nav-icon">🔖</span> Saved Posts
+      </a>
+      <a class="nav-link" id="nav-profile" href="#" onclick="goToMyProfile(); return false;">
+        <span class="nav-icon">👤</span> Profile
+      </a>
+      <button class="nav-link" id="nav-logout" onclick="logout()">
+        <span class="nav-icon">🚪</span> Logout
+      </button>
+    </nav>
+
+    <div class="sidebar-user-card" id="sidebar-user-card">
+      <div class="sidebar-user-info">
+        <div class="avatar avatar-sm" id="sidebar-avatar">?</div>
+        <div class="sidebar-user-names">
+          <div class="user-name" id="sidebar-name">Loading...</div>
+          <div class="user-handle" id="sidebar-handle">@...</div>
+        </div>
+      </div>
+      <div class="sidebar-stats">
+        <div class="sidebar-stat">
+          <span class="stat-value" id="sidebar-following">—</span>
+          <span class="stat-label">Following</span>
+        </div>
+        <div class="sidebar-stat">
+          <span class="stat-value" id="sidebar-followers">—</span>
+          <span class="stat-label">Followers</span>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content" role="main">
+
+    <!-- Header -->
+    <div class="feed-header">
+      <h1 class="feed-header-title">Home</h1>
+      <div class="tabs" role="tablist">
+        <button class="tab-btn active" id="tab-feed" role="tab" aria-selected="true" onclick="switchTab('feed')">Home</button>
+        <button class="tab-btn" id="tab-search" role="tab" aria-selected="false" onclick="switchTab('search')">Search</button>
+      </div>
+    </div>
+
+    <!-- Post Composer -->
+    <div class="composer" id="composer">
+      <div class="composer-inner">
+        <div class="avatar avatar-sm" id="composer-avatar">?</div>
+        <div class="composer-content">
+          <!-- Toolbar -->
+          <div class="composer-toolbar">
+            <div class="emoji-picker-wrap">
+              <button class="toolbar-btn" id="post-emoji-btn"
+                onclick="createEmojiPicker('post-input', 'post-emoji-btn')"
+                title="Add emoji" aria-label="Add emoji">😊</button>
+            </div>
+            <button class="toolbar-btn" onclick="document.getElementById('post-image-input').click()" title="Add image" aria-label="Add image">🖼️</button>
+            <input type="file" id="post-image-input" class="avatar-upload-input" accept="image/*" onchange="handleImageSelect(event)">
+          </div>
+          <textarea id="post-input" placeholder="What's on your mind?" maxlength="500" rows="3"
+            aria-label="Write a post" oninput="updateCharCounter(this,'post-char-counter',500)"></textarea>
+          <!-- Image preview -->
+          <div id="composer-preview"></div>
+          <div class="composer-footer">
+            <span class="char-counter" id="post-char-counter">500</span>
+            <button class="btn btn-primary btn-sm" id="post-submit-btn" onclick="submitPost()">Post</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Feed Panel -->
+    <div id="feed-panel">
+      <div class="posts-container" id="posts-container" role="feed" aria-label="Posts feed">
+        <div id="feed-skeleton">
+          <div class="skeleton-card"><div style="display:flex;gap:12px;margin-bottom:12px;"><div class="skeleton skeleton-avatar"></div><div style="flex:1;"><div class="skeleton skeleton-line w-30"></div><div class="skeleton skeleton-line w-50" style="margin-top:6px;"></div></div></div><div class="skeleton skeleton-line w-100"></div><div class="skeleton skeleton-line w-90"></div><div class="skeleton skeleton-line w-70" style="margin-top:10px;"></div></div>
+          <div class="skeleton-card"><div style="display:flex;gap:12px;margin-bottom:12px;"><div class="skeleton skeleton-avatar"></div><div style="flex:1;"><div class="skeleton skeleton-line w-50"></div><div class="skeleton skeleton-line w-30" style="margin-top:6px;"></div></div></div><div class="skeleton skeleton-line w-100"></div><div class="skeleton skeleton-line w-70"></div></div>
+        </div>
+        <div id="posts-list"></div>
+      </div>
+      <div class="load-more-wrap" id="load-more-wrap" style="display:none;">
+        <button class="btn btn-ghost" onclick="loadMorePosts()">Load More</button>
+      </div>
+    </div>
+
+    <!-- Search Panel -->
+    <div id="search-panel" style="display:none;" class="search-container">
+      <div class="search-bar-wrap">
+        <div class="search-input-group">
+          <span>🔍</span>
+          <input type="text" id="search-input" placeholder="Search users..." autocomplete="off" oninput="handleSearchInput(event)" aria-label="Search users">
+        </div>
+      </div>
+      <div class="search-results-list" id="search-results">
+        <div class="search-empty"><div class="icon">🔎</div><p>Type to search for users</p></div>
+      </div>
+    </div>
+
+    <!-- Notifications Panel -->
+    <div id="notif-panel" style="display:none;">
+      <div class="notif-list" id="notif-list">
+        <div style="text-align:center;padding:40px;"><div class="spinner" style="margin:0 auto;"></div></div>
+      </div>
+    </div>
+
+    <!-- Bookmarks Panel -->
+    <div id="bookmarks-panel" style="display:none;">
+      <div id="bookmarks-list" style="padding:8px 0;"></div>
+      <div class="load-more-wrap" id="bookmarks-load-more-wrap" style="display:none;">
+        <button class="btn btn-ghost" onclick="loadMoreBookmarks()">Load More</button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- RIGHT SIDEBAR -->
+  <aside class="sidebar-right" role="complementary">
+    <div class="glass-card" style="padding:20px;">
+      <h2 class="sidebar-widget-title">People to Follow</h2>
+      <div id="suggestions-list">
+        <div class="skeleton skeleton-line w-100" style="height:50px;border-radius:8px;"></div>
+      </div>
+    </div>
+
+    <div class="glass-card" style="padding:20px;">
+      <h2 class="sidebar-widget-title">🔍 Quick Search</h2>
+      <div style="display:flex;align-items:center;background:var(--bg-primary);border:1px solid var(--border);border-radius:10px;padding:0 12px;gap:8px;margin-bottom:0;">
+        <span style="color:var(--text-muted);">🔍</span>
+        <input type="text" placeholder="Find someone..." style="flex:1;background:none;border:none;outline:none;color:var(--text-primary);font-size:0.88rem;padding:10px 0;font-family:inherit;"
+          oninput="(function(e){clearTimeout(window._sidebarSearchT);const q=e.target.value.trim();if(q.length<2)return;window._sidebarSearchT=setTimeout(()=>{switchTab('search');setActiveNav('nav-search');document.getElementById('search-input').value=q;doSearch(q);},400);})(event)">
+      </div>
+    </div>
+
+    <p style="font-size:0.75rem;color:var(--text-muted);text-align:center;padding-bottom:20px;">© 2025 Aether · Built with ❤️</p>
+  </aside>
+
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="bottom-nav" role="navigation" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <button class="bottom-nav-btn active" id="mobile-nav-home" onclick="switchTab('feed'); setMobileActiveNav('mobile-nav-home')">
+      <span class="icon">🏠</span><span>Home</span>
+    </button>
+    <button class="bottom-nav-btn" id="mobile-nav-search" onclick="switchTab('search'); setMobileActiveNav('mobile-nav-search')">
+      <span class="icon">🔍</span><span>Search</span>
+    </button>
+    <button class="bottom-nav-btn" id="mobile-nav-notif" onclick="switchTab('notifications'); setMobileActiveNav('mobile-nav-notif')">
+      <span class="icon">🔔</span><span>Notifs</span>
+      <span class="notif-badge" id="mobile-notif-badge" style="display:none;position:absolute;top:4px;right:4px;"></span>
+    </button>
+    <button class="bottom-nav-btn" id="mobile-nav-profile" onclick="goToMyProfile()">
+      <span class="icon">👤</span><span>Profile</span>
+    </button>
+  </div>
+</nav>
+
+<!-- Upload Progress Toast -->
+<div class="upload-progress" id="upload-progress">
+  <div class="spinner"></div>
+  <span>Uploading image...</span>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/utils.js"></script>
+<script src="/js/feed.js"></script>
+</body>
+</html>

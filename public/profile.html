@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aether — Profile</title>
+  <meta name="description" content="View user profiles on Aether." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    body { background-color: var(--bg-primary); }
+    body::before { content:''; position:fixed; top:-200px; left:-200px; width:600px; height:600px; background:radial-gradient(circle,rgba(124,58,237,0.09) 0%,transparent 70%); pointer-events:none; }
+  </style>
+</head>
+<body>
+
+<div class="profile-layout">
+
+  <!-- Top Bar -->
+  <div class="profile-topbar">
+    <button class="back-btn" onclick="goBack()">← Back</button>
+    <div style="margin-left:auto;display:flex;gap:8px;">
+      <button class="btn btn-ghost btn-sm" onclick="goToFeed()">🏠 Feed</button>
+      <button class="btn btn-ghost btn-sm" onclick="logout()">🚪 Logout</button>
+    </div>
+  </div>
+
+  <!-- Skeleton -->
+  <div id="profile-header-skeleton" class="glass-card profile-header-card">
+    <div style="display:flex;gap:20px;align-items:flex-start;">
+      <div class="skeleton" style="width:90px;height:90px;border-radius:50%;flex-shrink:0;"></div>
+      <div style="flex:1;">
+        <div class="skeleton skeleton-line w-50" style="height:24px;"></div>
+        <div class="skeleton skeleton-line w-30" style="height:14px;margin-top:8px;"></div>
+        <div class="skeleton skeleton-line w-90" style="margin-top:14px;"></div>
+        <div class="skeleton skeleton-line w-70"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Header -->
+  <div id="profile-header" class="glass-card profile-header-card" style="display:none;">
+
+    <div class="profile-header-top">
+      <!-- Avatar with upload support -->
+      <div class="avatar avatar-xl" id="profile-avatar">?</div>
+      <input type="file" id="avatar-upload-input" class="avatar-upload-input" accept="image/*" onchange="handleAvatarUpload(event)">
+
+      <div class="profile-info">
+        <h1 class="profile-name" id="profile-name">Loading...</h1>
+        <div class="profile-handle" id="profile-handle">@username</div>
+        <p class="profile-bio" id="profile-bio"></p>
+        <div class="profile-join-date">📅 Joined <span id="profile-join-date">...</span></div>
+
+        <div class="profile-stats">
+          <div class="profile-stat" id="stat-posts">
+            <div class="profile-stat-value" id="profile-posts-count">0</div>
+            <div class="profile-stat-label">Posts</div>
+          </div>
+          <div class="profile-stat" id="stat-followers" style="cursor:pointer;" title="View followers">
+            <div class="profile-stat-value" id="profile-followers-count">0</div>
+            <div class="profile-stat-label">Followers</div>
+          </div>
+          <div class="profile-stat" id="stat-following" style="cursor:pointer;" title="View following">
+            <div class="profile-stat-value" id="profile-following-count">0</div>
+            <div class="profile-stat-label">Following</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="profile-actions" id="profile-actions"></div>
+
+    <!-- Edit Profile Form -->
+    <div class="edit-profile-form" id="edit-profile-form">
+      <h3 style="font-size:1rem;margin-bottom:16px;color:var(--text-secondary);">Edit Profile</h3>
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="edit-name">Display Name</label>
+          <input class="form-input" type="text" id="edit-name" placeholder="Your display name" maxlength="50" />
+        </div>
+        <div class="form-group" style="grid-column:1/-1;">
+          <label class="form-label" for="edit-bio">Bio</label>
+          <textarea class="form-textarea" id="edit-bio" placeholder="Tell people about yourself..." maxlength="160" rows="3"
+            oninput="updateCharCounter(this,'bio-char-counter',160)"></textarea>
+          <span class="char-counter" id="bio-char-counter">160</span>
+        </div>
+      </div>
+      <div id="edit-profile-error" class="form-error"></div>
+      <div style="display:flex;gap:10px;margin-top:8px;">
+        <button class="btn btn-primary btn-sm" id="save-profile-btn" onclick="saveProfile()">Save Changes</button>
+        <button class="btn btn-ghost btn-sm" onclick="cancelEditProfile()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Profile Content / Tabs -->
+  <div class="profile-content glass-card" id="profile-content" style="padding:0;display:none;">
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" id="tab-posts" role="tab" aria-selected="true" onclick="switchProfileTab('posts')">Posts</button>
+      <button class="tab-btn" id="tab-liked" role="tab" aria-selected="false" onclick="switchProfileTab('liked')">Liked</button>
+    </div>
+
+    <!-- Posts Panel -->
+    <div id="profile-posts-panel" style="padding:16px 24px 24px;">
+      <div id="profile-posts-list" class="profile-posts-list">
+        <div id="profile-posts-skeleton">
+          <div class="skeleton skeleton-line w-100" style="height:100px;border-radius:12px;margin-bottom:12px;"></div>
+          <div class="skeleton skeleton-line w-100" style="height:100px;border-radius:12px;margin-bottom:12px;"></div>
+        </div>
+      </div>
+      <div class="load-more-wrap" id="profile-load-more-wrap" style="display:none;">
+        <button class="btn btn-ghost btn-sm" onclick="loadMoreProfilePosts()">Load More</button>
+      </div>
+    </div>
+
+    <!-- Liked Panel -->
+    <div id="profile-liked-panel" style="padding:16px 24px 24px;display:none;">
+      <div id="profile-liked-list" class="profile-posts-list"></div>
+      <div class="load-more-wrap" id="profile-liked-load-more-wrap" style="display:none;">
+        <button class="btn btn-ghost btn-sm" onclick="loadMoreLikedPosts()">Load More</button>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Settings Panel -->
+<div class="settings-overlay" id="settings-overlay" onclick="closeSettings()"></div>
+<div class="settings-panel" id="settings-panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+    <h2 class="settings-title" style="margin:0;">⚙️ Settings</h2>
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+  </div>
+
+  <!-- Change Password -->
+  <div class="settings-section">
+    <div class="settings-section-label">🔒 Change Password</div>
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <input class="form-input" type="password" id="current-password" placeholder="Current password" />
+      <input class="form-input" type="password" id="new-password" placeholder="New password (min 6 chars)" />
+      <input class="form-input" type="password" id="confirm-password" placeholder="Confirm new password" />
+      <div id="password-error" class="form-error"></div>
+      <button class="btn btn-primary btn-sm" id="change-password-btn" onclick="changePassword()">Change Password</button>
+    </div>
+  </div>
+
+  <!-- Danger Zone -->
+  <div class="settings-section">
+    <div class="danger-zone">
+      <div class="settings-section-label">⚠️ Danger Zone</div>
+      <p style="font-size:0.84rem;color:var(--text-muted);margin-bottom:14px;">Permanently delete your account. This cannot be undone. All your posts, comments, and data will be removed.</p>
+      <input class="form-input" type="password" id="delete-password" placeholder="Enter your password to confirm" style="margin-bottom:10px;" />
+      <button class="btn btn-sm" id="delete-account-btn"
+        style="background:rgba(239,68,68,0.15);border:1px solid rgba(239,68,68,0.4);color:#ef4444;width:100%;"
+        onclick="deleteAccount()">🗑️ Delete My Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Bottom Nav -->
+<nav class="bottom-nav" role="navigation" aria-label="Mobile navigation">
+  <div class="bottom-nav-inner">
+    <button class="bottom-nav-btn" onclick="goToFeed()"><span class="icon">🏠</span><span>Home</span></button>
+    <button class="bottom-nav-btn active"><span class="icon">👤</span><span>Profile</span></button>
+    <button class="bottom-nav-btn" onclick="logout()"><span class="icon">🚪</span><span>Logout</span></button>
+  </div>
+</nav>
+
+<div id="toast-container" aria-live="polite"></div>
+
+<script src="/js/profile.js"></script>
+</body>
+</html>
